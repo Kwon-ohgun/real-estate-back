@@ -5,6 +5,7 @@ const lineArray = article.toString().split('\n');
 const dataArray = [];
 const stringArray = [];
 let strings = [];
+let data;
 // 소속마다 문자 분리
 for (let i = 0; i < lineArray.length; i++) {
   const line = lineArray[i];
@@ -24,12 +25,26 @@ for (let i = 0; i < stringArray.length; i++) {
     const line = strings[j];
     // 소속에서 이름 빼기
     if (line.startsWith('소속')) {
-      const belongs = line.split(' ');
-      dataArray.push({
-        team: belongs[1] + (belongs[2] !== '직위' ? ` ${belongs[2]}` : '') + (belongs[2] !== '직위' && belongs[3] !== '직위' ? ` ${belongs[3]}` : '') + (belongs[2] !== '직위' && belongs[3] !== '직위' && belongs[4] !== '직위' ? ` ${belongs[4]}` : ''),
-        name: belongs[belongs.length - 1]
-      })
+      const lineSplit = line.split(' ');
+      data = {
+        team: lineSplit[1] + (lineSplit[2] !== '직위' ? ` ${lineSplit[2]}` : '') + (lineSplit[2] !== '직위' && lineSplit[3] !== '직위' ? ` ${lineSplit[3]}` : '') + (lineSplit[2] !== '직위' && lineSplit[3] !== '직위' && lineSplit[4] !== '직위' ? ` ${lineSplit[4]}` : ''),
+        name: lineSplit[lineSplit.length - 1],
+        assetsMy: [],
+        assetsMySpouse: []
+      };
+      dataArray.push(data);
     }
+    // 본인 재산목록 넣기
+    if (line.startsWith('본인')) {
+      const lineSplit = line.split(' ');
+      if (lineSplit.length !== 1) {
+        data.assetsMy.push({
+          type: lineSplit[1],
+          value: lineSplit.splice(2).join(' ')
+        })
+      }
+    }
+    data.money = 1000;
   }
 }
 
