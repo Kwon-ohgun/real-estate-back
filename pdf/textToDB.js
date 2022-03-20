@@ -1,5 +1,28 @@
 const fs = require('fs');
 
+const relatives = ['본인','배우자','부','모','시모','장남','차남','장녀','차녀'];
+const landType = [
+  '아파트','연립주택','상가','단독주택','오피스텔','복합건물','근린생활시설','창고','다세대주택','공장','기타',
+  '임야','전','답','대지','잡종지','과수원','도로','유지','묘지','공장용지'
+];
+
+const commonSet = function(type, relative, value, data) {
+  if (!landType.includes(type)) return;
+  if (relative === '본인') {
+    data.assetsMy.push({
+      type: type,
+      value: value,
+      relative: relative
+    })
+  } else {
+    data.assetsMyRelative.push({
+      type: type,
+      value: value,
+      relative: relative
+    })
+  }
+}
+
 const article = fs.readFileSync("source.txt");
 const lineArray = article.toString().split('\n');
 const dataArray = [];
@@ -30,27 +53,33 @@ for (let i = 0; i < stringArray.length; i++) {
         team: lineSplit[1] + (lineSplit[2] !== '직위' ? ` ${lineSplit[2]}` : '') + (lineSplit[2] !== '직위' && lineSplit[3] !== '직위' ? ` ${lineSplit[3]}` : '') + (lineSplit[2] !== '직위' && lineSplit[3] !== '직위' && lineSplit[4] !== '직위' ? ` ${lineSplit[4]}` : ''),
         name: lineSplit[lineSplit.length - 1],
         assetsMy: [],
-        assetsMySpouse: []
+        assetsMyRelative: []
       };
       dataArray.push(data);
     }
     // 본인 재산목록 넣기
-    if (line.startsWith('본인')) {
-      const lineSplit = line.split(' ');
-      if (lineSplit.length !== 1) {
-        data.assetsMy.push({
-          type: lineSplit[1],
-          value: lineSplit.splice(2).join(' ')
-        })
+    for (let k = 0; k < relatives.length; k++) {
+      const relative = relatives[k];
+      if (line.startsWith(relative)) {
+        const lineSplit = line.split(' ');
+        if (lineSplit[0] !== relative) continue;
+        if (lineSplit.length === 1) {
+          const type = strings[j + 1];
+          const value = strings[j + 3];
+          commonSet(type, relative, value, data);
+        } else if (lineSplit.length === 2) {
+          // console.log(i, data.name);
+          const type = lineSplit[1];
+          const value = strings[j + 1];
+          commonSet(type, relative, value, data);
+        } else {
+          const type = lineSplit[1];
+          const value = lineSplit.splice(2).join(' ');
+          commonSet(type, relative, value, data);
+        }
       }
     }
-    data.money = 1000;
   }
 }
 
-// for (let i = 0; i < lineArray.length; i++) {
-//   const line = lineArray[i];
-//   if (line.startsWith('소속')) {
-//   }
-// }
 console.log(dataArray);
