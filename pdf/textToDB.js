@@ -1,3 +1,4 @@
+const { default: axios } = require('axios');
 const fs = require('fs');
 
 const relatives = ['본인','배우자','부','모','시모','장남','차남','장녀','차녀'];
@@ -9,7 +10,7 @@ const cido = ['서울','부산','대구','인천','광주','대전','울산','�
 
 const commonSet = function(type, relative, value, data) {
   if (type === '기타') {
-    let finded = false
+    let finded = false;
     for (let i = 0; i < cido.length; i++) {
       if (value.startsWith(cido[i])) {
         finded = true;
@@ -23,15 +24,15 @@ const commonSet = function(type, relative, value, data) {
       type: type,
       value: value,
       relative: relative
-    })
+    });
   } else {
     data.assetsMyRelative.push({
       type: type,
       value: value,
       relative: relative
-    })
+    });
   }
-}
+};
 
 const article = fs.readFileSync("source.txt");
 const lineArray = article.toString().split('\n');
@@ -95,3 +96,7 @@ for (let i = 0; i < stringArray.length; i++) {
 }
 
 console.log(dataArray);
+
+axios.patch('https://real-estate-g-default-rtdb.firebaseio.com/estates.json', {
+  congress: dataArray
+});

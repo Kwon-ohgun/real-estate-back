@@ -5,6 +5,7 @@
   },
   "description": "express-server",
   "dependencies": {
+    "axios": "^0.26.1",
     "express": "^4.17.1",
     "swagger-ui-express": "^4.1.6"
   }
