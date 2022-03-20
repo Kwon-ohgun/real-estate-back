@@ -5,8 +5,18 @@ const landType = [
   '아파트','연립주택','상가','단독주택','오피스텔','복합건물','근린생활시설','창고','다세대주택','공장','기타',
   '임야','전','답','대지','잡종지','과수원','도로','유지','묘지','공장용지'
 ];
+const cido = ['서울','부산','대구','인천','광주','대전','울산','세종','경기','강원','충청','전라','경상','제주'];
 
 const commonSet = function(type, relative, value, data) {
+  if (type === '기타') {
+    let finded = false
+    for (let i = 0; i < cido.length; i++) {
+      if (value.startsWith(cido[i])) {
+        finded = true;
+      }
+    }
+    if (!finded) return;
+  }
   if (!landType.includes(type)) return;
   if (relative === '본인') {
     data.assetsMy.push({
@@ -57,6 +67,9 @@ for (let i = 0; i < stringArray.length; i++) {
       };
       dataArray.push(data);
     }
+    // if (data.name === '홍영기') {
+    //   console.log(i, data.name);
+    // }
     // 본인 재산목록 넣기
     for (let k = 0; k < relatives.length; k++) {
       const relative = relatives[k];
@@ -68,7 +81,6 @@ for (let i = 0; i < stringArray.length; i++) {
           const value = strings[j + 3];
           commonSet(type, relative, value, data);
         } else if (lineSplit.length === 2) {
-          // console.log(i, data.name);
           const type = lineSplit[1];
           const value = strings[j + 1];
           commonSet(type, relative, value, data);
